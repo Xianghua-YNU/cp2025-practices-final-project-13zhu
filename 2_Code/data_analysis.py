@@ -11,14 +11,14 @@
 
         if b == 0:
             # 理想干涉模型
-            delta = (d * x) / D  # 近似光程差
+            delta = (d * x) / D 
             phase = (2 * np.pi * delta) / lambda_m
             intensity = 4 * np.cos(phase / 2) ** 2
         else:
             # 衍射模型
-            delta = (d * x) / D  # 干涉光程差
+            delta = (d * x) / D  
             phase = (2 * np.pi * delta) / lambda_m
-            theta = np.arctan(x / D)  # 衍射角度
+            theta = np.arctan(x / D)
             alpha = (np.pi * b * np.sin(theta)) / lambda_m
             # 避免除零错误
             alpha[alpha == 0] = 1e-10
