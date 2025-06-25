@@ -1,20 +1,28 @@
-"""
-数据后处理与分析模块：用于对模拟结果进行分析。
-"""
-import numpy as np
-import pandas as pd
+ def calculate_intensity(self):
+        """计算光强分布"""
+        # 转换单位：mm→m，nm→m
+        d = self.d * 1e-3
+        lambda_m = self.lambda_val * 1e-9
+        D = self.D * 1e-3
+        b = self.b * 1e-3
 
-def analyze_data(data):
-    """
-    示例：对模拟数据进行基本分析。
-    """
-    print("Analyzing data...")
-    # 这里可以进行统计分析、特征提取等
-    # 例如：计算平均值、标准差、拟合曲线等
-    # analyzed_result = {
-    #     'mean': np.mean(data),
-    #     'std': np.std(data)
-    # }
-    return data # 暂时返回原始数据
+        # 生成x轴坐标（单位：m），覆盖±50mm范围
+        x = np.linspace(-50e-3, 50e-3, 1000)
 
-# 可以添加更多数据分析函数
+        if b == 0:
+            # 理想干涉模型
+            delta = (d * x) / D  # 近似光程差
+            phase = (2 * np.pi * delta) / lambda_m
+            intensity = 4 * np.cos(phase / 2) ** 2
+        else:
+            # 衍射模型
+            delta = (d * x) / D  # 干涉光程差
+            phase = (2 * np.pi * delta) / lambda_m
+            theta = np.arctan(x / D)  # 衍射角度
+            alpha = (np.pi * b * np.sin(theta)) / lambda_m
+            # 避免除零错误
+            alpha[alpha == 0] = 1e-10
+            diffraction_factor = (np.sin(alpha) / alpha) ** 2
+            intensity = 4 * diffraction_factor * np.cos(phase / 2) ** 2
+
+        return x, intensity
